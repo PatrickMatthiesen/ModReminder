@@ -1,0 +1,54 @@
+﻿{
+  "Response": {
+    "profiles": [
+      {
+        "dateLastPlayed": "2022-07-14T15:41:22Z",
+        "isOverridden": false,
+        "isCrossSavePrimary": true,
+        "crossSaveOverride": 2,
+        "applicableMembershipTypes": [
+          3,
+          5,
+          2
+        ],
+        "isPublic": false,
+        "membershipType": 2,
+        "membershipId": "4611686018442057913",
+        "displayName": "HeyImStone",
+        "bungieGlobalDisplayName": "Stonecool",
+        "bungieGlobalDisplayNameCode": 6516
+      }
+    ],
+    "bnetMembership": {
+      "supplementalDisplayName": "Stonecool#6516",
+      "iconPath": "/img/profile/avatars/th_BnetAvs45.jpg",
+      "crossSaveOverride": 0,
+      "isPublic": false,
+      "membershipType": 254,
+      "membershipId": "9819940",
+      "displayName": "Stonecool",
+      "bungieGlobalDisplayName": "Stonecool",
+      "bungieGlobalDisplayNameCode": 6516
+    },
+    "profilesWithErrors": [
+      {
+        "errorCode": 1601,
+        "infoCard": {
+          "crossSaveOverride": 2,
+          "applicableMembershipTypes": [],
+          "isPublic": true,
+          "membershipType": 5,
+          "membershipId": "4611686018515277556",
+          "displayName": "HeyImStone#4359",
+          "bungieGlobalDisplayName": "Stonecool",
+          "bungieGlobalDisplayNameCode": 6516
+        }
+      }
+    ]
+  },
+  "ErrorCode": 1,
+  "ThrottleSeconds": 0,
+  "ErrorStatus": "Success",
+  "Message": "Ok",
+  "MessageData": {}
+}

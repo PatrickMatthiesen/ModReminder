@@ -1,12 +1,11 @@
-﻿namespace ModReminder.Maui
-{
-    public partial class App : Application
-    {
-        public App()
-        {
-            InitializeComponent();
+﻿namespace ModReminder.Maui;
 
-            MainPage = new MainPage();
-        }
+public partial class App : Application
+{
+    public App()
+    {
+        InitializeComponent();
+
+        MainPage = new MainPage();
     }
 }

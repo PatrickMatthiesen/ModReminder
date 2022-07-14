@@ -17,11 +17,11 @@ builder.Services.AddSwaggerGen(c =>
     c.UseInlineDefinitionsForEnums();
 });
 
-
 builder.Services.AddSingleton(x => new BungieApiClient( new BungieClientConfig { ApiKey = builder.Configuration["Bungie:ApiKey"], OAuthClientId = 40759u }));
+builder.Services.AddScoped(sp => new HttpClient());
 
 var app = builder.Build();
-
+app.Environment.
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
