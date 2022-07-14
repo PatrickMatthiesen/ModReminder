@@ -1,13 +1,51 @@
 ﻿@page "/daniboi"
 @inject HttpClient Http
+@using CustomBungieApiClient
 
 <h3>DaniBoi</h3>
 
-@code {
-    //private DestinyLinkedProfilesResponse[]? forecasts;
+<EditForm EditContext="@editContext" OnValidSubmit="GetBungieUserDetails" class="d-flex m-3">
+    <InputText id="membershipId" class="form-control" placeholder="bungie user id"
+        @bind-Value="membershipId" />
+    <button class="button" type="submit" @onclick="GetBungieUserDetails">
+        <span class="oi oi-pencil"></span>
+    </button>
+</EditForm>
 
-    //protected override async Task OnInitializedAsync()
-    //{
-    //    forecasts = await Http.GetFromJsonAsync<DestinyLinkedProfilesResponse[]>("WeatherForecast");
-    //}
+<div class="rounded border border-primary p-3 d-inline-block m-3 col">
+    @if (profile != null && membershipId != "")
+    {
+        <h4>Display name: @profile.displayName</h4>
+        <p>Is Primary profile: @profile.isCrossSavePrimary</p>
+        <div>Bungie name: @profile.bungieGlobalDisplayName#@profile.bungieGlobalDisplayNameCode</div>
+        <div>Membershi Id: @profile.membershipId</div>
+        <div>Membershi Type: @profile.membershipType</div>
+        <div class="">
+            <p class="font-weight-bold">some box</p>
+        </div>
+    }
+    else
+    {
+        <p>No profile found</p>
+    }
+</div>
+
+
+@code {
+    private string membershipId = "";
+
+    private Profile? profile = null;
+
+    private EditContext editContext;
+
+    protected override async Task OnInitializedAsync()
+    {
+        editContext = new EditContext(membershipId);
+    }
+
+    private async void GetBungieUserDetails()
+    {
+        profile = await Http.GetFromJsonAsync<Profile>($"/BungieProfile/{membershipId}");
+        StateHasChanged();
+    }
 }

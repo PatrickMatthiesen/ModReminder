@@ -1,4 +1,4 @@
-﻿namespace CustomBungieApiClient.DataModels;
+﻿namespace CustomBungieApiClient;
 
 public record LinkedProfilesResponce
 {
@@ -7,7 +7,7 @@ public record LinkedProfilesResponce
     public int ThrottleSeconds { get; set; }
     public string ErrorStatus { get; set; }
     public string Message { get; set; }
-    public IDictionary<string,string> MessageData { get; set; }
+    public IDictionary<string, string> MessageData { get; set; }
 }
 
 public record Response

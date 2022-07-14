@@ -4,7 +4,6 @@ using BungieSharper.Entities.Destiny;
 using BungieSharper.Entities.Destiny.Responses;
 using BungieSharper.Entities;
 using CustomBungieApiClient;
-using CustomBungieApiClient.DataModels;
 
 namespace ModReminder.Server.Controllers;
 
@@ -52,7 +51,7 @@ public class BungieController : ControllerBase
     //    return await _client.Api.Destiny2_GetProfile(membershipId, membershipType, components: new List<DestinyComponentType>());
     //}
 
-    [HttpGet("/TestHttpClient")]
+    [HttpGet("/BungieProfile/{membershipId}")]
     public async Task<Profile?> GetBungieProfile(int membershipId)
     {
         var baseUri = "https://localhost:7208";

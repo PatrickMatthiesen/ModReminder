@@ -27,4 +27,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.6" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BungieApiClient\CustomBungieApiClient.csproj" />
+  </ItemGroup>
+
 </Project>

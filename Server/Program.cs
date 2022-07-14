@@ -21,7 +21,7 @@ builder.Services.AddSingleton(x => new BungieApiClient( new BungieClientConfig {
 builder.Services.AddScoped(sp => new HttpClient());
 
 var app = builder.Build();
-app.Environment.
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
