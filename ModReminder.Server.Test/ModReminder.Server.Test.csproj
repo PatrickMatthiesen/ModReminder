@@ -24,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BungieApiClient\CustomBungieApiClient.csproj" />
     <ProjectReference Include="..\Server\ModReminder.Server.csproj" />
   </ItemGroup>
 

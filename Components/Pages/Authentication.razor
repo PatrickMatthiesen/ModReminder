@@ -1,0 +1,40 @@
+﻿@page "/authentication/{action}"
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+@using System.Security.Claims
+@using System.Net
+@*@inject ILogger<Authentication> _logger*@
+@inject HttpClient _http
+@inject AuthenticationStateProvider _authenticationStateProvider
+@*@inject ILocalStorageService _localStore*@
+@inject IJSRuntime _jsRuntime
+
+
+<RemoteAuthenticatorView Action="@Action" OnLogInSucceeded="@OnLoginSuccess"
+    OnLogOutSucceeded="@_clearLocalStorageFromUser" />
+
+
+@code {
+    [Parameter]
+    public string? Action { get; set; }
+    
+    [Parameter]
+    public string? code { get; set; }
+
+
+    private async void OnLoginSuccess(){
+        
+    }
+
+    //private async void _setLocalStorageFromUser(UserDetailsDto user)
+    //{
+    //    await _localStore.SetItemAsync("user", user);
+    //}
+
+    private async void _clearLocalStorageFromUser()
+    {
+    //    if (await _localStore.ContainKeyAsync("user"))
+    //    {
+    //        await _localStore.RemoveItemAsync("user");
+    //    }
+    }
+}

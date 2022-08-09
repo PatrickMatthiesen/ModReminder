@@ -1,6 +1,11 @@
 using BungieSharper.Client;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using DotNetBungieAPI.AspNet.Security.OAuth.Providers;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.OAuth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,8 +22,50 @@ builder.Services.AddSwaggerGen(c =>
     c.UseInlineDefinitionsForEnums();
 });
 
-builder.Services.AddSingleton(x => new BungieApiClient( new BungieClientConfig { ApiKey = builder.Configuration["Bungie:ApiKey"], OAuthClientId = 40759u }));
+builder.Services.AddSingleton(x => 
+    new BungieApiClient( 
+        new BungieClientConfig 
+        {
+            ApiKey = builder.Configuration["Bungie:ApiKey"], 
+            OAuthClientId = Convert.ToUInt32(builder.Configuration["Bungie:ClientId"]),
+            OAuthClientSecret = builder.Configuration["Bungie:ClientSecret"]
+        }));
 builder.Services.AddScoped(sp => new HttpClient());
+builder.Services.AddMemoryCache();
+
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("MyCors",
+//        policy =>
+//        {
+//            policy.WithOrigins("https://www.bungie.net").AllowAnyHeader();
+//            policy.WithOrigins("https://localhost:7208").AllowAnyHeader();
+//        });
+//});
+
+builder.Services.AddAuthentication(o =>
+    {
+        o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        o.DefaultChallengeScheme = BungieNetAuthenticationDefaults.AuthenticationScheme;
+        o.DefaultAuthenticateScheme = BungieNetAuthenticationDefaults.AuthenticationScheme;
+    })
+    .AddCookie()
+    .AddBungieNet(c =>
+    {
+        c.ApiKey = builder.Configuration["Bungie:ApiKey"];
+        c.ClientId = builder.Configuration["Bungie:ClientId"];
+        c.ClientSecret = builder.Configuration["Bungie:ClientSecret"];
+        c.Events = new OAuthEvents
+        {
+            OnCreatingTicket = oAuthCreatingTicketContext =>
+            {
+                //BungieAuthCacheService.TryAddContext(oAuthCreatingTicketContext);
+                return Task.CompletedTask;
+            }
+        };
+    });
+
+
 
 var app = builder.Build();
 
@@ -38,6 +85,8 @@ else
     app.UseHsts();
 }
 
+
+
 app.UseHttpsRedirection();
 
 app.UseBlazorFrameworkFiles();
@@ -45,6 +94,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+
+app.UseAuthentication();
+//app.UseCors("MyCors");
 
 app.MapRazorPages();
 app.MapControllers();

@@ -1,6 +1,6 @@
 ﻿@page "/daniboi"
 @inject HttpClient Http
-@using CustomBungieApiClient
+@using BungieSharper.Entities.Destiny.Responses;
 
 <h3>DaniBoi</h3>
 
@@ -15,11 +15,11 @@
 <div class="rounded border border-primary p-3 d-inline-block m-3 col">
     @if (profile != null && membershipId != "")
     {
-        <h4>Display name: @profile.displayName</h4>
-        <p>Is Primary profile: @profile.isCrossSavePrimary</p>
-        <div>Bungie name: @profile.bungieGlobalDisplayName#@profile.bungieGlobalDisplayNameCode</div>
-        <div>Membershi Id: @profile.membershipId</div>
-        <div>Membershi Type: @profile.membershipType</div>
+        <h4>Display name: @profile.DisplayName</h4>
+        <p>Is Primary profile: @profile.IsCrossSavePrimary</p>
+        <div>Bungie name: @profile.BungieGlobalDisplayName#@profile.BungieGlobalDisplayNameCode</div>
+        <div>Membershi Id: @profile.MembershipId</div>
+        <div>Membershi Type: @profile.MembershipType</div>
         <div class="">
             <p class="font-weight-bold">some box</p>
         </div>
@@ -34,7 +34,9 @@
 @code {
     private string membershipId = "";
 
-    private Profile? profile = null;
+    //private Profile? profile = null;
+
+    private DestinyProfileUserInfoCard profile;
 
     private EditContext editContext;
 
@@ -45,7 +47,9 @@
 
     private async void GetBungieUserDetails()
     {
-        profile = await Http.GetFromJsonAsync<Profile>($"/BungieProfile/{membershipId}");
+        //profile = await Http.GetFromJsonAsync<Profile>($"/BungieProfile/{membershipId}");
+        var linkedprofile = await Http.GetFromJsonAsync<DestinyLinkedProfilesResponse>($"/GetLinkedProfiles/{membershipId}/254");
+        profile = linkedprofile.Profiles.FirstOrDefault();
         StateHasChanged();
     }
 }
