@@ -1,76 +1,48 @@
-﻿using BungieSharper.Client;
-using Microsoft.AspNetCore.Mvc;
-using BungieSharper.Entities.Destiny;
-using BungieSharper.Entities.Destiny.Responses;
+﻿using BungieSharper.Entities.Destiny.Responses;
 using BungieSharper.Entities;
-using Microsoft.Extensions.Caching.Memory;
-using BungieSharper.Entities.Destiny.Config;
-using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using BungieSharper.Client;
+using Microsoft.EntityFrameworkCore;
+using BungieSharper.Entities.Destiny;
+using ModReminder.Infrastructure.DbContext;
 
 namespace ModReminder.Server.Controllers;
 
+[Route("api/[controller]")]
 [ApiController]
-[Route("[controller]")]
 public class BungieController : ControllerBase
 {
-    public readonly ILogger<BungieController> _logger;
-    public readonly BungieApiClient _client;
+    private readonly ILogger<BungieController> _logger;
+    private readonly BungieApiClient _client;
+    private readonly ApplicationDbContext _context;
 
-    public BungieController(ILogger<BungieController> logger, BungieApiClient client)
+    public BungieController(ILogger<BungieController> logger, BungieApiClient client, ApplicationDbContext context)
     {
         _logger = logger;
         _client = client;
+        _context = context;
     }
 
-    [HttpGet]
-    public async Task<DestinyVendorsResponse?> Get(long membershipId, BungieMembershipType membershipType)
+    [HttpGet("LinkedProfiles/{userId}")]
+    public async Task<DestinyLinkedProfilesResponse> GetLinkedProfiles(string userId)
     {
-        var linkedProfiles = await _client.Api.Destiny2_GetLinkedProfiles(membershipId, membershipType);
+        var user = _context.Users.Include(u => u.BungieToken).FirstOrDefault(u => u.Id == userId);
 
-        var profile = linkedProfiles.Profiles.Where(p => p.IsCrossSavePrimary).FirstOrDefault();
-
-        if (profile == null) return null;
-
-        var user = await _client.Api.Destiny2_GetProfile(profile.MembershipId, profile.MembershipType, components: new List<DestinyComponentType> { DestinyComponentType.Characters });
-        var characterId = user.Characters.Data.Keys.FirstOrDefault();
-
-        var components = new List<DestinyComponentType>() { DestinyComponentType.VendorSales, DestinyComponentType.ItemPerks };
-
-        return await _client.Api.Destiny2_GetVendors(characterId, membershipId, membershipType);
+        return await _client.Api.Destiny2_GetLinkedProfiles(user.BungieToken.MembershipId, BungieMembershipType.BungieNext);
     }
 
-    [HttpGet("/GetLinkedProfiles/{membershipId}/{membershipType}")]
-    public async Task<DestinyLinkedProfilesResponse> GetLinkedProfiles(long membershipId, BungieMembershipType membershipType)
+    [HttpGet("Vendors/{membershipId}/{membershipType}/{userId}")]
+    public async Task<DestinyVendorsResponse> GetVendorSales(long membershipId, BungieMembershipType membershipType, string userId)
     {
-        return await _client.Api.Destiny2_GetLinkedProfiles(membershipId, membershipType);
-    }
+        var userBungieToken = await _context.GetUserTokensAsync(userId);
 
-    [HttpGet("/GetProfile")]
-    public async Task<DestinyProfileResponse?> GetProfile(long membershipId, BungieMembershipType membershipType)
-    {
-        return await _client.Api.Destiny2_GetProfile(membershipId, membershipType, components: new List<DestinyComponentType>());
-    }
+        var components = new[] { DestinyComponentType.VendorSales, DestinyComponentType.ItemPerks };
 
-    [HttpGet("/GetManifest")]
-    public async Task<DestinyManifest?> GetManifest()
-    {
-        return await _client.Api.Destiny2_GetDestinyManifest();
-    }
+        var profile = await _client.Api.Destiny2_GetProfile(membershipId, membershipType, new[] { DestinyComponentType.Characters });
+        var characterId = profile.Characters.Data.Keys.First();
 
-    [HttpGet("/BungieToken/{code}/{state}")]
-    public async Task<string> GetBungieToken(string code, string state)
-    {
-        var token = await _client.OAuth.GetOAuthToken(code);
-        
-        return "/";
-    }
-
-    [HttpGet("/bungie_net")]
-    public async Task RedirectToBungieNet()
-    {
-        await HttpContext.ChallengeAsync(
-            "BungieNet",
-            new AuthenticationProperties());
+        return await _client.Api.Destiny2_GetVendors(characterId, membershipId, membershipType, components: components, authToken: userBungieToken.AccessToken);
     }
 
 }

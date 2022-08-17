@@ -1,15 +1,24 @@
 using BungieSharper.Client;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
-using DotNetBungieAPI.AspNet.Security.OAuth.Providers;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Authentication.OAuth;
+using ModReminder.Infrastructure.DataModels;
+using ModReminder.Infrastructure.DbContext;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString));
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddIdentityServer()
+    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+builder.Services.AddAuthentication().AddIdentityServerJwt();
 
 //builder.Configuration.AddKeyPerFile("/run/secrets", true);
 builder.Services.AddControllersWithViews();
@@ -30,8 +39,9 @@ builder.Services.AddSingleton(x =>
             OAuthClientId = Convert.ToUInt32(builder.Configuration["Bungie:ClientId"]),
             OAuthClientSecret = builder.Configuration["Bungie:ClientSecret"]
         }));
-builder.Services.AddScoped(sp => new HttpClient());
-builder.Services.AddMemoryCache();
+
+//builder.Services.AddScoped(sp => new HttpClient());
+//builder.Services.AddMemoryCache();
 
 //builder.Services.AddCors(options =>
 //{
@@ -43,27 +53,27 @@ builder.Services.AddMemoryCache();
 //        });
 //});
 
-builder.Services.AddAuthentication(o =>
-    {
-        o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        o.DefaultChallengeScheme = BungieNetAuthenticationDefaults.AuthenticationScheme;
-        o.DefaultAuthenticateScheme = BungieNetAuthenticationDefaults.AuthenticationScheme;
-    })
-    .AddCookie()
-    .AddBungieNet(c =>
-    {
-        c.ApiKey = builder.Configuration["Bungie:ApiKey"];
-        c.ClientId = builder.Configuration["Bungie:ClientId"];
-        c.ClientSecret = builder.Configuration["Bungie:ClientSecret"];
-        c.Events = new OAuthEvents
-        {
-            OnCreatingTicket = oAuthCreatingTicketContext =>
-            {
-                //BungieAuthCacheService.TryAddContext(oAuthCreatingTicketContext);
-                return Task.CompletedTask;
-            }
-        };
-    });
+//builder.Services.AddAuthentication(o =>
+//    {
+//        o.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//        o.DefaultChallengeScheme = BungieNetAuthenticationDefaults.AuthenticationScheme;
+//        o.DefaultAuthenticateScheme = BungieNetAuthenticationDefaults.AuthenticationScheme;
+//    })
+//    .AddCookie()
+//    .AddBungieNet(c =>
+//    {
+//        c.ApiKey = builder.Configuration["Bungie:ApiKey"];
+//        c.ClientId = builder.Configuration["Bungie:ClientId"];
+//        c.ClientSecret = builder.Configuration["Bungie:ClientSecret"];
+//        c.Events = new OAuthEvents
+//        {
+//            OnCreatingTicket = oAuthCreatingTicketContext =>
+//            {
+//                //BungieAuthCacheService.TryAddContext(oAuthCreatingTicketContext);
+//                return Task.CompletedTask;
+//            }
+//        };
+//    });
 
 
 
@@ -94,9 +104,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-
+app.UseIdentityServer();
 app.UseAuthentication();
-//app.UseCors("MyCors");
+app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapControllers();

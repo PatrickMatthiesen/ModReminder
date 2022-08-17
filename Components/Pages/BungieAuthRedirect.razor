@@ -1,0 +1,37 @@
+﻿@page "/BungieAuth"
+@inject AuthenticationStateProvider _authenticationStateProvider
+@inject HttpClient _client
+@inject ILocalStorageService _localStorage
+@inject NavigationManager _navigationManager
+
+<div>Handling authentication token...</div>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "code")]
+    public string? Code { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "state")]
+    public string? State { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            //_authMessage = $"{user.Identity.Name} is authenticated.";
+            var _claims = user.Claims;
+            var _userId = user.FindFirst(c => c.Type == "sub").Value;
+            var responce = await _client.GetAsync($"api/Bungie/Auth/{_userId}/{Code}");
+            await _localStorage.SetItemAsync("hasToken", responce.IsSuccessStatusCode ? "true" : "false");
+            _navigationManager.NavigateTo("/");
+        }
+        else
+        {
+            //_authMessage = "The user is NOT authenticated.";
+        }
+    }
+}

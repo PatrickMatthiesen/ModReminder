@@ -1,6 +1,6 @@
 ﻿using Foundation;
 
-namespace ModReminder.Maui;
+namespace ModReminder.Maui.Platforms.iOS;
 
 [Register("AppDelegate")]
 public class AppDelegate : MauiUIApplicationDelegate

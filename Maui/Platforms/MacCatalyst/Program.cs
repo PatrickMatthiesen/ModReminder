@@ -1,7 +1,7 @@
 ﻿using ObjCRuntime;
 using UIKit;
 
-namespace ModReminder.Maui;
+namespace ModReminder.Maui.Platforms.MacCatalyst;
 
 public class Program
 {
