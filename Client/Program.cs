@@ -14,8 +14,6 @@ builder.Services.AddHttpClient("ModReminder.ServerAPI", client => client.BaseAdd
 
 builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("ModReminder.ServerAPI"));
 
-builder.Services.AddScoped<UserInfoUtil>();
-
 builder.Services.AddApiAuthorization();
 
 builder.Services.AddBlazoredLocalStorage();

@@ -9,8 +9,14 @@
 @code{
     [Parameter] public string? Action { get; set; }
 
-    private void OnLoginSuccess()
+    private async void OnLoginSuccess()
     {
-        _navigationManager.NavigateTo("https://www.bungie.net/en/oauth/authorize?client_id=40759&response_type=code");
+        var userId = await _authenticationStateProvider.GetUserId();
+
+        if (!await _http.GetFromJsonAsync<bool>($"api/Bungie/HasToken/{userId}"))
+        {
+            _navigationManager.NavigateTo("https://www.bungie.net/en/oauth/authorize?client_id=40759&response_type=code");
+        }
+        _navigationManager.NavigateTo("/");
     }
 }

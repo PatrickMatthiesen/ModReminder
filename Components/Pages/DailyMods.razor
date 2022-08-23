@@ -1,0 +1,25 @@
+﻿@page "/daily/mods"
+@inject HttpClient Http
+@inject AuthenticationStateProvider _authenticationStateProvider
+<h3>DailyMods</h3>
+
+
+<div class="rounded border border-primary p-3 d-inline-block m-3 col">
+    @foreach (var item in _mods)
+    {
+        <div>
+            <h5>
+                @item
+            </h5>
+        </div>
+    }
+</div>
+
+@code {
+    private List<string>? _mods = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var _mods = new List<string>() { "s", "somethig"}; //await Http.GetFromJsonAsync<List<string>>($"api/Bungie/LinkedProfiles/");
+    }
+}

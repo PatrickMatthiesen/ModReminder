@@ -31,6 +31,35 @@ public class BungieAuthenticationController : ControllerBase
     {
         var tokenResponce = await _client.OAuth.GetOAuthToken(code);
 
+        await UpdateBungieToken(userId, tokenResponce);
+
+        return Ok();
+    }
+
+    [HttpGet("HasToken/{userId}")]
+    public async Task<bool> VerifyUserHasToken(string userId)
+    {
+        var tokens = await _context.GetUserTokensAsync(userId);
+        if (tokens is not null)
+        {
+            if (tokens.ExpirationDate < DateTime.Now)
+            {
+                return true;
+            }
+            if (tokens.RefreshExpirationDate < DateTime.Now)
+            {
+                var tokenResponce = await _client.OAuth.RefreshOAuthToken(tokens.RefreshToken);
+
+                await UpdateBungieToken(userId, tokenResponce);
+
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private async Task UpdateBungieToken(string userId, TokenResponse? tokenResponce)
+    {
         if (tokenResponce is not null && tokenResponce.Error is null && tokenResponce.MembershipId is not null)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
@@ -48,18 +77,7 @@ public class BungieAuthenticationController : ControllerBase
             user.BungieToken = token;
             await _context.SaveChangesAsync();
         }
-
-        return Ok();
     }
-
-    [HttpGet("HasToken/{userId}")]
-    public async Task<bool> VerifyUserHasTokken(string userId)
-    {
-        var tokens = await _context.GetUserTokensAsync(userId);
-
-        return tokens is not null;
-    }
-
 
 
 }

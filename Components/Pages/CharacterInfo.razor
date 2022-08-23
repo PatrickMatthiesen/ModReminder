@@ -1,7 +1,6 @@
 ﻿@page "/CharacterInfo"
 @inject HttpClient Http
 @inject AuthenticationStateProvider _authenticationStateProvider
-@inject UserInfoUtil _userUtil
 @attribute [Authorize]
 @using BungieSharper.Entities.Destiny.Responses
 
@@ -62,7 +61,7 @@
 
     private async void GetBungieUserDetails()
     {
-        var userId = await _userUtil.GetUserId();
+        var userId = await _authenticationStateProvider.GetUserId();
         var linkedprofile = await Http.GetFromJsonAsync<DestinyLinkedProfilesResponse>($"api/Bungie/LinkedProfiles/{userId}");
         profile = linkedprofile.Profiles.FirstOrDefault();
         StateHasChanged();
@@ -71,7 +70,7 @@
 
     private async void GetSalesDetails()
     {
-        var userId = await _userUtil.GetUserId();
+        var userId = await _authenticationStateProvider.GetUserId();
         vendorsResponce = await Http.GetFromJsonAsync<DestinyVendorsResponse>($"api/Bungie/Vendors/{profile.MembershipId}/{(int)profile.MembershipType}/{userId}");
         StateHasChanged();
     }
