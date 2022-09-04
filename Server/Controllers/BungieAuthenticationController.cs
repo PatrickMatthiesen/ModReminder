@@ -42,11 +42,11 @@ public class BungieAuthenticationController : ControllerBase
         var tokens = await _context.GetUserTokensAsync(userId);
         if (tokens is not null)
         {
-            if (tokens.ExpirationDate < DateTime.Now)
+            if (DateTime.Now < tokens.ExpirationDate)
             {
                 return true;
             }
-            if (tokens.RefreshExpirationDate < DateTime.Now)
+            if (DateTime.Now < tokens.RefreshExpirationDate)
             {
                 var tokenResponce = await _client.OAuth.RefreshOAuthToken(tokens.RefreshToken);
 

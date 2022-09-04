@@ -1,25 +1,61 @@
 ﻿@page "/daily/mods"
+@using Components.Data
 @inject HttpClient Http
 @inject AuthenticationStateProvider _authenticationStateProvider
+
+
 <h3>DailyMods</h3>
 
 
-<div class="rounded border border-primary p-3 d-inline-block m-3 col">
-    @foreach (var item in _mods)
+<div class="">
+    
+    @if (_mods == null)
     {
-        <div>
-            <h5>
-                @item
-            </h5>
-        </div>
+        <div> loading </div>
+    }
+    else
+    {
+        @foreach (var item in _mods)
+        {
+            <div class="destiny-border p-3 d-inline-block m-3 col bg-opacity-25 bg-secondary">
+                <h5>@item.Name</h5>
+                <div class="d-flex flex-row">
+                    <div class="m-2">icon</div>
+                    <div>@item.Description</div>
+                </div>
+                <div>@item.VendorName</div>
+            </div>
+        }
     }
 </div>
 
 @code {
-    private List<string>? _mods = null;
+    private ModDto[] _mods;
 
     protected override async Task OnInitializedAsync()
     {
-        var _mods = new List<string>() { "s", "somethig"}; //await Http.GetFromJsonAsync<List<string>>($"api/Bungie/LinkedProfiles/");
+        //await Http.GetFromJsonAsync<List<string>>($"api/Bungie/LinkedProfiles/");
+        setThatStuff();
+    }
+
+    private void setThatStuff()
+    {
+        _mods = new ModDto[]
+        {
+            new ModDto
+            {
+                Hash = 123456789,
+                Name = "mod 1",
+                Description = "some thing that is somewhat long and looks like im saying something about something pew pew mod thing",
+                VendorName = "Xur den bitch"
+            },
+            new ModDto
+            {
+                Hash = 123456789,
+                Name = "mod 2",
+                Description = "This is just a test for seeing if our discription section, so no need to read any further as it is nonsense",
+                VendorName = "Eva"
+            }
+        };
     }
 }

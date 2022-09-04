@@ -48,8 +48,8 @@
     private async void GetBungieUserDetails()
     {
         //profile = await Http.GetFromJsonAsync<Profile>($"/BungieProfile/{membershipId}");
-        var linkedprofile = await Http.GetFromJsonAsync<DestinyLinkedProfilesResponse>($"/GetLinkedProfiles/{membershipId}/254");
-        profile = linkedprofile.Profiles.FirstOrDefault();
+        //var linkedprofile = await Http.GetFromJsonAsync<DestinyLinkedProfilesResponse>($"api/Bungie/LinkedProfiles/{}");
+        //profile = linkedprofile.Profiles.FirstOrDefault();
         StateHasChanged();
     }
 }
