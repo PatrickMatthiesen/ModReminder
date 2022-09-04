@@ -24,6 +24,13 @@
 
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
+	   <Extensions>
+            <uap:Extension Category="windows.protocol">
+            <uap:Protocol Name="modreminder">
+                <uap:DisplayName>ModReminder</uap:DisplayName>
+            </uap:Protocol>
+            </uap:Extension>
+       </Extensions>
       <uap:VisualElements
         DisplayName="$placeholder$"
         Description="$placeholder$"

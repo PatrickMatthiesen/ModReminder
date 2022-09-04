@@ -1,0 +1,22 @@
+﻿@page "/authentication/{action}"
+@inject HttpClient _http
+@inject NavigationManager _navigationManager
+@inject AuthenticationStateProvider _authenticationStateProvider
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+<RemoteAuthenticatorView Action="@Action" OnLogInSucceeded="@OnLoginSuccess" />
+
+@code{
+    [Parameter] public string? Action { get; set; }
+
+    private async void OnLoginSuccess()
+    {
+        var userId = await _authenticationStateProvider.GetUserId();
+
+        if (!await _http.GetFromJsonAsync<bool>($"api/Bungie/HasToken/{userId}"))
+        {
+            _navigationManager.NavigateTo("https://www.bungie.net/en/oauth/authorize?client_id=40759&response_type=code");
+        }
+        _navigationManager.NavigateTo("/");
+    }
+}

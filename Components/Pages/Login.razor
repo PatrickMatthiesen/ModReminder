@@ -1,0 +1,24 @@
+﻿@page "/login"
+@using ModReminder.Components.Data;
+
+<h3>Login</h3>
+<EditForm EditContext="@_editContext">
+    <InputText @bind-Value=_user.Name placeholder="Name"></InputText>
+</EditForm>
+
+@code {
+
+    private EditContext _editContext;
+
+    private User _user = new();
+
+    protected override void OnInitialized()
+    {
+        _user.Name = "";
+        _editContext = new EditContext(_user);
+        //_editContext.OnFieldChanged += EditContext_HandleFieldChanged;
+
+        base.OnInitialized();
+    }
+
+}

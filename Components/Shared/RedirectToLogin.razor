@@ -1,0 +1,9 @@
+﻿@inject NavigationManager _navigation
+<div class="loader loader-bouncing"><span>Redirecting...</span></div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        _navigation.NavigateTo($"authentication/login?returnUrl={Uri.EscapeDataString(_navigation.Uri)}");
+    }
+}

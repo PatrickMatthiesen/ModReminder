@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components.WebView.Maui;
 using ModReminder.Components.Data;
+using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Claims;
+using ModReminder.Components;
 
 namespace ModReminder.Maui;
 
@@ -25,6 +28,23 @@ public static class MauiProgram
         builder.Services.AddSingleton<WeatherForecastService>();
         builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(baseUri) });
 
-        return builder.Build();
+        builder.Services.AddAuthorizationCore();
+        builder.Services.AddScoped<AuthenticationStateProvider, ExternalAuthStateProvider>();
+        builder.Services.AddSingleton<AuthenticatedUser>();
+        var host = builder.Build();
+
+        var authenticatedUser = host.Services.GetRequiredService<AuthenticatedUser>();
+
+        /*
+        Provide OpenID/MSAL code to authenticate the user. See your identity provider's 
+        documentation for details.
+
+        The user is represented by a new ClaimsPrincipal based on a new ClaimsIdentity.
+        */
+        var user = new ClaimsPrincipal(new ClaimsIdentity());
+
+        authenticatedUser.Principal = user;
+
+        return host;
     }
 }

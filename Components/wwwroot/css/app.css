@@ -1,7 +1,18 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+:root {
+    --destiny-text: #dadada;
+    --destiny-border: #b7b7b7;
+}
+
+#app {
+    height: 100%;
+    color: var(--destiny-text);
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    height: 100%;
 }
 
 h1:focus {
@@ -20,6 +31,10 @@ a, .btn-link {
 
 .content {
     padding-top: 1.1rem;
+}
+
+.destiny-border{
+    border: 2.5px solid var(--destiny-border);
 }
 
 .valid.modified:not([type=checkbox]) {
