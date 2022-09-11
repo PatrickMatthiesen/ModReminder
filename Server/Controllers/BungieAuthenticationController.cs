@@ -62,7 +62,7 @@ public class BungieAuthenticationController : ControllerBase
     {
         if (tokenResponce is not null && tokenResponce.Error is null && tokenResponce.MembershipId is not null)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            var user = await _context.Users.Include("BungieToken").FirstOrDefaultAsync(u => u.Id == userId);
             var token = new BungieToken
             {
                 AccessToken = tokenResponce.AccessToken,
@@ -72,9 +72,13 @@ public class BungieAuthenticationController : ControllerBase
                 MembershipId = tokenResponce.MembershipId ?? 0 // can never be null
             };
 
-            _context.BungieTokens.Add(token);
+            if (user.BungieToken is not null)
+            {
+                _context.Remove(user.BungieToken);
+            }
 
             user.BungieToken = token;
+
             await _context.SaveChangesAsync();
         }
     }
