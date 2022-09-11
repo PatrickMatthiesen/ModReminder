@@ -4,6 +4,8 @@ using ModReminder.Infrastructure.DataModels;
 using ModReminder.Infrastructure.DbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Identity;
+using ModReminder.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +15,16 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>  {
+    options.SignIn.RequireConfirmedAccount = true;
+
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 3;
+    options.Password.RequiredUniqueChars = 0;
+})
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddIdentityServer()
@@ -39,6 +50,8 @@ builder.Services.AddSingleton(x =>
             OAuthClientId = Convert.ToUInt32(builder.Configuration["Bungie:ClientId"]),
             OAuthClientSecret = builder.Configuration["Bungie:ClientSecret"]
         }));
+
+builder.Services.AddHostedService<BungieDailyUpdateService>();
 
 //builder.Services.AddScoped(sp => new HttpClient());
 //builder.Services.AddMemoryCache();
