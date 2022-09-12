@@ -35,6 +35,8 @@ builder.Services.AddAuthentication().AddIdentityServerJwt();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -52,6 +54,7 @@ builder.Services.AddSingleton(x =>
         }));
 
 builder.Services.AddHostedService<BungieDailyUpdateService>();
+builder.Services.AddHostedService<BungieManifestUpdateService>();
 
 //builder.Services.AddScoped(sp => new HttpClient());
 //builder.Services.AddMemoryCache();

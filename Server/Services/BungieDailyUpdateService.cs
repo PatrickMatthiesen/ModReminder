@@ -2,10 +2,15 @@
 
 namespace ModReminder.Server.Services;
 
-public class BungieDailyUpdateService : IHostedService
+public sealed class BungieDailyUpdateService : IHostedService
 {
-    private Timer _timer;
+    private Timer? _timer;
+    private readonly ILogger<BungieDailyUpdateService> _logger;
 
+    public BungieDailyUpdateService(ILogger<BungieDailyUpdateService> logger)
+    {
+        _logger = logger;
+    }
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
@@ -15,7 +20,7 @@ public class BungieDailyUpdateService : IHostedService
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        _timer.Dispose();
+        _timer?.Dispose();
         return Task.CompletedTask;
     }
 
@@ -32,7 +37,7 @@ public class BungieDailyUpdateService : IHostedService
     }
     private void DoWork(object? state)
     {
-        Console.WriteLine(" timer fired me ");
+        _logger.LogInformation("hi so i am a daily update service");
     }
 
 }
