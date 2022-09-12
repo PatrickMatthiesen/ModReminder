@@ -25,18 +25,26 @@ public class BungieController : ControllerBase
     }
 
     [HttpGet("LinkedProfiles/{userId}")]
-    public async Task<DestinyLinkedProfilesResponse> GetLinkedProfiles(string userId)
+    public async Task<ActionResult<DestinyLinkedProfilesResponse>> GetLinkedProfiles(string userId)
     {
         var user = _context.Users.Include(u => u.BungieToken).FirstOrDefault(u => u.Id == userId);
+
+        if (user is null)
+        {
+            return NotFound("User not found");
+        }
+        if (user.BungieToken is null)
+        {
+            return NotFound("User has not authenticated with Bungie");
+        }
 
         return await _client.Api.Destiny2_GetLinkedProfiles(user.BungieToken.MembershipId, BungieMembershipType.BungieNext);
     }
 
-    [HttpGet("Vendors/{membershipId}/{membershipType}/{userId}")]
-    public async Task<DestinyVendorsResponse> GetVendorSales(long membershipId, BungieMembershipType membershipType, string userId)
+    [HttpGet("Vendors/{userId}/{membershipId}/{membershipType}")]
+    public async Task<DestinyVendorsResponse> GetVendorSales(string userId, long membershipId, BungieMembershipType membershipType)
     {
         var userBungieToken = await _context.GetUserTokensAsync(userId);
-
         var components = new[] { DestinyComponentType.VendorSales, DestinyComponentType.ItemPerks };
 
         var profile = await _client.Api.Destiny2_GetProfile(membershipId, membershipType, new[] { DestinyComponentType.Characters });

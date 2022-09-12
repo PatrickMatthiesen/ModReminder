@@ -13,16 +13,14 @@ namespace ModReminder.Server.Controllers;
 
 [Route("api/Bungie")]
 [ApiController]
-public class BungieAuthenticationController : ControllerBase
+public sealed class BungieAuthenticationController : ControllerBase
 {
     private readonly BungieApiClient _client;
-    private readonly UserManager<ApplicationUser> _userManager;
     private readonly ApplicationDbContext _context;
 
-    public BungieAuthenticationController(BungieApiClient client, UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+    public BungieAuthenticationController(BungieApiClient client, ApplicationDbContext context)
     {
         _client = client;
-        _userManager = userManager;
         _context = context;
     }
 
@@ -50,6 +48,11 @@ public class BungieAuthenticationController : ControllerBase
             {
                 var tokenResponce = await _client.OAuth.RefreshOAuthToken(tokens.RefreshToken);
 
+                if (tokenResponce is null || tokenResponce.Error is not null)
+                {
+                    return false;
+                }
+
                 await UpdateBungieToken(userId, tokenResponce);
 
                 return true;
@@ -58,7 +61,7 @@ public class BungieAuthenticationController : ControllerBase
         return false;
     }
 
-    private async Task UpdateBungieToken(string userId, TokenResponse? tokenResponce)
+    private async Task UpdateBungieToken(string userId, TokenResponse tokenResponce)
     {
         if (tokenResponce is not null && tokenResponce.Error is null && tokenResponce.MembershipId is not null)
         {
@@ -68,7 +71,7 @@ public class BungieAuthenticationController : ControllerBase
                 AccessToken = tokenResponce.AccessToken,
                 ExpirationDate = DateTime.Now.AddSeconds(tokenResponce.ExpiresIn ?? 0),
                 RefreshToken = tokenResponce.RefreshToken,
-                RefreshExpirationDate = tokenResponce.RefreshExpiresIn is not null ? DateTime.Now.AddSeconds(tokenResponce.RefreshExpiresIn ?? 0) : null,
+                RefreshExpirationDate = DateTime.Now.AddSeconds(tokenResponce.RefreshExpiresIn ?? 0),
                 MembershipId = tokenResponce.MembershipId ?? 0 // can never be null
             };
 

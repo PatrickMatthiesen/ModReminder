@@ -71,7 +71,7 @@
     private async void GetSalesDetails()
     {
         var userId = await _authenticationStateProvider.GetUserId();
-        vendorsResponce = await Http.GetFromJsonAsync<DestinyVendorsResponse>($"api/Bungie/Vendors/{profile.MembershipId}/{(int)profile.MembershipType}/{userId}");
+        vendorsResponce = await Http.GetFromJsonAsync<DestinyVendorsResponse>($"api/Bungie/Vendors/{userId}/{profile.MembershipId}/{profile.MembershipType}");
         StateHasChanged();
     }
 }

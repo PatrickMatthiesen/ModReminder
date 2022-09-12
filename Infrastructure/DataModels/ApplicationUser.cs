@@ -14,8 +14,8 @@ public class BungieToken
     [Required]
     public string AccessToken { get; set; }
     public DateTime ExpirationDate { get; set; }
-    public string? RefreshToken { get; set; }
-    public DateTime? RefreshExpirationDate { get; set; }
+    public string RefreshToken { get; set; }
+    public DateTime RefreshExpirationDate { get; set; }
     /// <summary>
     /// The Bungie.net (membership type BungieNext / 254) membership ID of the authenticated user
     /// </summary>
