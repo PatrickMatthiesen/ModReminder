@@ -8,8 +8,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="BungieSharper" Version="0.9.2" />
+		<PackageReference Include="BungieSharper" Version="0.9.3" />
+		<PackageReference Include="DotNetBungieAPI" Version="2.5.0" />
 		<PackageReference Include="DotNetBungieAPI.AspNet.Security.OAuth.Providers" Version="1.0.2" />
+		<PackageReference Include="DotNetBungieAPI.DefinitionProvider.Sqlite" Version="1.2.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.8" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />

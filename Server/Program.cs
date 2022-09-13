@@ -6,6 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using ModReminder.Server.Services;
+using DotNetBungieAPI;
+using DotNetBungieAPI.Services.Default.ServiceConfigurations;
+using DotNetBungieAPI.DefinitionProvider.Sqlite;
+using DotNetBungieAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,8 +39,6 @@ builder.Services.AddAuthentication().AddIdentityServerJwt();
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-builder.Services.AddHttpClient();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -52,6 +54,16 @@ builder.Services.AddSingleton(x =>
             OAuthClientId = Convert.ToUInt32(builder.Configuration["Bungie:ClientId"]),
             OAuthClientSecret = builder.Configuration["Bungie:ClientSecret"]
         }));
+
+
+builder.Services.UseBungieApiClient(config =>
+{
+    config.DefinitionProvider.UseSqliteDefinitionProvider(c =>
+    {
+        c.ManifestFolderPath = @"SQLite_Manifests";
+    });
+    config.ClientConfiguration.UsedLocales.Add(BungieLocales.EN);
+});
 
 builder.Services.AddHostedService<BungieDailyUpdateService>();
 builder.Services.AddHostedService<BungieManifestUpdateService>();
