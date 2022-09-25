@@ -55,8 +55,9 @@ internal sealed class BungieManifestUpdateService : IHostedService
     {
         var manifest = await _client.Api.Destiny2_GetDestinyManifest();
         var filePath = $@"SQLite_Manifests";
+        var fileName = $@"{filePath}\world_content_{manifest.Version}";
 
-        if (File.Exists(filePath + @"\world_content_" + manifest.Version))
+        if (File.Exists(Path.Combine(filePath, "world_content_" + manifest.Version, Path.GetFileName(manifest.MobileWorldContentPaths["en"]))))
         {
             _logger.LogInformation($"Manifest already downloaded at: {filePath + @"\world_content_" + manifest.Version}");
             return;
