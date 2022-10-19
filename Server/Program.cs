@@ -9,6 +9,7 @@ using ModReminder.Server.Services;
 using DotNetBungieAPI;
 using DotNetBungieAPI.Services.Default.ServiceConfigurations;
 using DotNetBungieAPI.DefinitionProvider.Sqlite;
+using DotNetBungieAPI.DefinitionProvider;
 using DotNetBungieAPI.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -58,6 +59,10 @@ builder.Services.AddSingleton(x =>
 
 builder.Services.UseBungieApiClient(config =>
 {
+    config.ClientConfiguration.ApiKey = builder.Configuration["Bungie:ApiKey"];
+    config.ClientConfiguration.ClientId = Convert.ToInt32(builder.Configuration["Bungie:ClientId"]);
+    config.ClientConfiguration.ClientSecret = builder.Configuration["Bungie:ClientSecret"];
+
     config.DefinitionProvider.UseSqliteDefinitionProvider(c =>
     {
         c.ManifestFolderPath = @"SQLite_Manifests";

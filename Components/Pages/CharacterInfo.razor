@@ -36,6 +36,10 @@
 <div class="rounded border border-primary p-3 d-inline-block m-3 col">
     @if (vendorsResponce != null)
     {
+        @foreach (var vendor in vendorsResponce)
+        {
+            <p>@vendor</p>
+        }
         <h4>VendorResponce loaded</h4>
     }
     else
@@ -49,7 +53,7 @@
     //private string membershipId = "";
 
     private DestinyProfileUserInfoCard? profile = null;
-    private DestinyVendorsResponse? vendorsResponce = null;
+    private List<string>? vendorsResponce = null;
 
     //private EditContext editContext;
 
@@ -71,7 +75,7 @@
     private async void GetSalesDetails()
     {
         var userId = await _authenticationStateProvider.GetUserId();
-        vendorsResponce = await Http.GetFromJsonAsync<DestinyVendorsResponse>($"api/Bungie/Vendors/{userId}/{profile.MembershipId}/{profile.MembershipType}");
+        vendorsResponce = await Http.GetFromJsonAsync<List<string>>($"api/Test/Vendors/{userId}/{profile.MembershipId}/{profile.MembershipType}");
         StateHasChanged();
     }
 }
