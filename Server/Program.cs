@@ -66,8 +66,11 @@ builder.Services.UseBungieApiClient(config =>
     config.DefinitionProvider.UseSqliteDefinitionProvider(c =>
     {
         c.ManifestFolderPath = @"SQLite_Manifests";
+        c.AutoUpdateManifestOnStartup = true;
+        c.FetchLatestManifestOnInitialize = true;
     });
     config.ClientConfiguration.UsedLocales.Add(BungieLocales.EN);
+    
 });
 
 builder.Services.AddHostedService<BungieDailyUpdateService>();

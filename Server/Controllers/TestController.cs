@@ -39,12 +39,16 @@ public class TestController : ControllerBase
             AccessToken = userBungieToken.AccessToken,
         };
         var vendors = await _bungieClient.ApiAccess.Destiny2.GetVendors(membershipType, membershipId, characterId, componentTypes: components, authorizationToken: token);
-        
-            
-        return vendors.Response.Vendors.Data.Select(x =>
-        {
-            x.Value.Vendor.TryGetDefinition(out var vendor);
-            return vendor.DisplayProperties.Name;
-        }).ToList();
+
+        var sales = vendors.Response.Sales.Data.Values.SelectMany(s => 
+            s.SaleItems.Select(i => {
+                if (i.Value.Item.TryGetDefinition(out var item, BungieLocales.EN))
+                {
+                    return item.ItemTypeDisplayName; // is not correct
+                }
+                return null;
+        })).ToList();
+
+        return sales;
     }
 }

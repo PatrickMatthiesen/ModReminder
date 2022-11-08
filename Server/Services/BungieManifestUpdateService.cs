@@ -33,6 +33,7 @@ internal sealed class BungieManifestUpdateService : IHostedService
     {
         DownloadManifest(null);
         _timer = new Timer(DownloadManifest, null, getJobRunDelay(), TimeSpan.FromDays(7));
+        bungieClient.DefinitionProvider.Initialize();
         return Task.CompletedTask;
     }
     
